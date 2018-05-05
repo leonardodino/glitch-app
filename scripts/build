@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -eo pipefail
+rm -rf ./build ./dist && mkdir -p ./build ./dist
+
+semver(){
+  sed 's/^\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1.\2.\3/'
+}
+
+PKG_VERSION="$(json version < package.json | semver)"
+ICON='./Glitch.icns'
+DARK_THEME='./src/dark.tmTheme'
+DARK_PREFIX='body.MINIMAL_UI.DARK'
+
+CSS_SOURCE='./src/inject.css'
+CSS_INJECT='./build/inject.css'
+
+JS_SOURCE='./src/inject.js'
+JS_INJECT='./build/inject.js'
+
+# [BUILD_CSS]
+cat \
+  "$CSS_SOURCE" \
+  <(./scripts/tm-to-cm-1 --prefix "$DARK_PREFIX" < "$DARK_THEME" || kill $$) \
+  <(./scripts/tm-to-cm-2 --prefix "$DARK_PREFIX" < "$DARK_THEME" || kill $$) \
+  | cssnano | perfectionist -f compact \
+  > "$CSS_INJECT"
+
+# [BUILD_JS]
+kitsch "$JS_SOURCE" > "$JS_INJECT"
+
+# [BUILD_ELECTRON]
+nativefier \
+  --platform osx --arch x64 \
+  --app-version "$PKG_VERSION" \
+  --min-width 360 --min-height 360 \
+  --name 'Glitch' --icon "$ICON" \
+  --inject "$CSS_INJECT" --inject "$JS_INJECT" \
+  'https://glitch.com' 'build'
+
+mv ./build/Glitch-darwin-x64/Glitch.app ./dist/Glitch.app
+rm -rf ./build

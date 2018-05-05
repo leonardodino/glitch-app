@@ -1,0 +1,23 @@
+{
+  "name": "glitch-app",
+  "version": "0.0.0-alpha",
+  "description": "glitch.com electron wrapper",
+  "repository": "https://github.com/leonardodino/glitch-app",
+  "author": "Leonardo Dino",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "./scripts/build"
+  },
+  "dependencies": {
+    "cssjson": "^2",
+    "cssnano-cli": "^1.0.5",
+    "json": "^9.0.6",
+    "kitsch": "^0.0.0",
+    "lodash": "^1",
+    "minimist": "^1.2.0",
+    "nativefier": "^7.6.2",
+    "perfectionist": "^2.4.0",
+    "plist": "^1"
+  }
+}

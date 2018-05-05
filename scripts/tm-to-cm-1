@@ -1,0 +1,162 @@
+#!/usr/bin/env node
+
+// SOURCE: https://github.com/FarhadG/codeMirror-aceEditor-theme-generator
+// LICENSE: ISC - Farhad Ghayour
+
+var plist = require('plist')
+var cssjson = require('cssjson')
+var cli = require('../lib/cli')
+var {process: perfectionist} = require('perfectionist')
+var scopes = {
+  // 'background': 'background',
+  // 'foreground': 'color',
+  selection: ['CodeMirror-selected', 'background'],
+  lineHighlight: ['CodeMirror-activeline-background', 'background'],
+  comment: 'cm-comment',
+  string: 'cm-string',
+  'constant.numeric': 'cm-number',
+  'constant.language': 'cm-atom',
+  keyword: 'cm-keyword',
+  'entity.name.function': 'cm-variable',
+  'variable.parameter': 'cm-def',
+  'support.function': 'cm-property',
+}
+
+var root = {}
+
+function parseStyles(styles) {
+  var css = []
+
+  var fontStyle = styles.fontStyle || ''
+
+  if (fontStyle.indexOf('underline') !== -1) {
+    css.push(['text-decoration', 'underline'])
+  }
+
+  if (fontStyle.indexOf('italic') !== -1) {
+    css.push(['font-style', 'italic'])
+  }
+
+  if (styles.foreground) {
+    css.push(['color', styles.foreground])
+  }
+
+  if (styles.background) {
+    css.push(['background', styles.background])
+  }
+
+  return css
+}
+
+function convertClass(string) {
+  return '.' + string
+}
+
+function nameSpace(themeName) {
+  return themeName
+}
+
+function buildClass(themeName, selector) {
+  return [nameSpace(themeName), convertClass(selector)].join(' ')
+}
+
+function print(json) {
+  console.log(JSON.stringify(json, null, 4))
+}
+
+function generateThemeInfo(themeInfo, theme) {
+  for (var themeInfo in theme) {
+    if (themeInfo.toLowerCase() !== 'settings') {
+      var info = theme[themeInfo]
+      root[themeInfo] = info
+    }
+  }
+  root.children = {}
+  root.unsupported = {}
+}
+
+function addToUnsupported(scope, info) {
+  root.unsupported[scope] = info
+}
+
+function writeToRoot(selector, property, value) {
+  root.children[selector] = root.children[selector] || {}
+  root.children[selector].attributes = root.children[selector].attributes || {}
+  root.children[selector].attributes[property] = value
+}
+
+function generateGlobalStyles(styles, themeName, theme) {
+  for (var scope in styles) {
+    var codeMirror = scopes[scope]
+    if (codeMirror) {
+      var selector, property, value
+      if (Array.isArray(codeMirror)) {
+        selector = buildClass(themeName, codeMirror[0])
+        property = codeMirror[1]
+        value = styles[scope]
+      }
+      else {
+        ;(selector = nameSpace(themeName)), (property = codeMirror)
+        value = styles[scope]
+      }
+      writeToRoot(selector, property, value)
+    } else {
+      addToUnsupported(scope, 'Global styling')
+    }
+  }
+}
+
+function generateStyles(styles, themeName, theme) {
+  var codeMirror = scopes[styles.scope]
+  if (codeMirror) {
+    var selector = buildClass(themeName, codeMirror)
+    var cssStyles = parseStyles(styles.settings)
+    for (var i = 0; i < cssStyles.length; i++) {
+      var property = cssStyles[i][0]
+      var value = cssStyles[i][1]
+      writeToRoot(selector, property, value)
+    }
+  } else {
+    addToUnsupported(styles.scope, styles)
+  }
+}
+
+function extractStyles(themeName, theme) {
+  generateThemeInfo(themeName, theme)
+  var settings = theme.settings
+
+  for (var i = 0; i < settings.length; i++) {
+    if (!(settings[i].name || settings[i].scope)) {
+      generateGlobalStyles(settings[i].settings, themeName, theme)
+    } else {
+      generateStyles(settings[i], themeName, theme)
+    }
+  }
+}
+
+module.exports = ({name, data}) => {
+  var theme = plist.parseStringSync(data)
+  extractStyles(name, theme)
+  var css = cssjson.toCSS(root)
+  return perfectionist(css, {format: 'compact'}).toString()
+}
+
+if (require.main === module) {
+  cli((err, {data, name}) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+      return
+    }
+    try {
+      var result = module.exports({data, name})
+      console.log(result)
+      process.exit(0)
+      return
+    } catch (err) {
+      console.error(err)
+      process.exit(1)
+      return
+    }
+  })
+}

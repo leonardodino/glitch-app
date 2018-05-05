@@ -1,0 +1,268 @@
+#!/usr/bin/env node
+
+// SOURCE: https://github.com/codio/tmthemeConverter
+// LICENSE: MIT - Friedel Ziegelmayer
+
+var plist = require('plist')
+var _ = require('lodash')
+var cli = require('../lib/cli')
+var {process: perfectionist} = require('perfectionist')
+var scopeMap = {
+  color: '0.settings.color',
+  background: '0.settings.background',
+  cursor: '0.settings.caret',
+  activeline: '0.settings.lineHighlight',
+  selected: '0.settings.selection',
+  comment: {
+    scope: 'comment',
+  },
+  string: {
+    scope: 'string',
+  },
+  'string-2': {
+    scope: 'support.constant',
+  },
+  property: {
+    scope: 'support.type',
+  },
+  qualifier: {
+    scope: 'entity.name.class',
+  },
+  tag: {
+    scope: 'entity.name.tag',
+  },
+  attribute: {
+    scope: 'entity.other.attribute-name',
+  },
+  number: {
+    scope: 'constant.numeric',
+  },
+  keyword: {
+    scope: 'keyword',
+  },
+  operator: {
+    scope: 'keyword.operator',
+  },
+  error: {
+    scope: 'invalid',
+  },
+  invalidchar: {
+    scope: 'invalid',
+  },
+  variable: {
+    scope: 'variable',
+  },
+  'variable-2': {
+    scope: 'entity.name',
+  },
+}
+
+
+function getPath(obj, path) {
+  var parts = path.split('.')
+  return _.reduce(
+    parts,
+    function(result, part) {
+      return result[part]
+    },
+    obj
+  )
+}
+
+function parseSettings(settings) {
+  var finalScopes = {}
+
+  _.forEach(scopeMap, function(value, key) {
+    if (_.isObject(value)) {
+
+      var val = _(settings).find(function(setting) {
+        if (!setting.scope || setting.scope === 'none') {
+          return
+        }
+
+        var scopes = _(setting.scope.split(',')).map(function(sc) {
+          return sc.trim()
+        })
+
+        return _(scopes).find(function(sc) {
+
+          return sc === value.scope
+        })
+      })
+
+      if (val) {
+        return (finalScopes[key] = val.settings)
+      } else {
+
+        var val = _(settings).find(function(setting) {
+          if (!setting.scope || setting.scope === 'none') {
+            return
+          }
+
+          var scopes = _(setting.scope.split(',')).map(function(sc) {
+            return sc.trim()
+          })
+
+          return _(scopes).find(function(sc) {
+            return sc.indexOf(value.scope) === 0
+          })
+        })
+
+        if (val) {
+          return (finalScopes[key] = val.settings)
+        } else {
+          return
+        }
+      }
+    }
+
+    finalScopes[key] = getPath(settings, value)
+  })
+
+  return finalScopes
+}
+
+var tm = {
+  parse: function(raw) {
+
+    raw = raw.replace(/foreground/g, 'color')
+
+    var parsedPlist = plist.parseStringSync(raw)
+
+    var result = {}
+    result.name = parsedPlist.name
+    result.scopes = parseSettings(parsedPlist.settings)
+    result.gutter = parsedPlist.gutterSettings
+
+    return result
+  },
+}
+
+function convertToCss(values) {
+  return _.reduce(
+    values,
+    function(result, value, name) {
+      if (_.isEmpty(value)) {
+        return result
+      }
+
+      if (name === 'fontStyle') {
+        if (value === 'italic') {
+          return (result += 'font-style: italic; ')
+        } else if (value === 'bold') {
+          return (result += 'font-weight: bold; ')
+        }
+      }
+
+      if (name === 'divider') {
+        return (result += 'border-right-color: ' + value + '; ')
+      }
+
+      return (result += name + ': ' + value + '; ')
+    },
+    ''
+  )
+}
+
+
+function getCmClass(name, values) {
+  switch (name) {
+    case 'background':
+      return ' .CodeMirror { background: ' + values + '; }'
+      break
+    case 'color':
+      return ' .CodeMirror { color: ' + values + '; }'
+      break
+    case 'activeline':
+      return (
+        ' .CodeMirror-activeline-background { background: ' +
+        values +
+        ' !important; }'
+      )
+      break
+    case 'selected':
+      return ' .CodeMirror-selected { background: ' + values + '; }'
+      break
+    case 'cursor':
+      return ' .CodeMirror-cursor { color: ' + values + '; }'
+      break
+    default:
+      return ' .cm-' + name + ' { ' + convertToCss(values) + '}'
+  }
+}
+var cm = {
+  create: function(theme) {
+
+
+    var cssClass = theme.name
+    var result = ''
+
+    if (theme.gutter) {
+      if (
+        theme.gutter.selectionBackground ||
+        theme.gutter.selectionForeground
+      ) {
+        var gutterResult =
+          cssClass +
+          ' .CodeMirror-activeline .CodeMirror-gutter-elt,\n' +
+          cssClass +
+          ' .CodeMirror-activeline .CodeMirror-gutter-elt .CodeMirror-foldgutter-folded,\n' +
+          cssClass +
+          ' .CodeMirror-activeline .CodeMirror-gutter-elt .CodeMirror-foldgutter-open { '
+
+        if (theme.gutter.selectionForeground) {
+          gutterResult += 'color: ' + theme.gutter.selectionForeground + '; '
+          delete theme.gutter.selectionForeground
+        }
+        if (theme.gutter.selectionBackground) {
+          gutterResult +=
+            'background: ' + theme.gutter.selectionBackground + '; '
+          delete theme.gutter.selectionBackground
+        }
+
+        result += gutterResult + '}\n'
+      }
+
+      result +=
+        cssClass +
+        ' .CodeMirror-gutters { ' +
+        convertToCss(theme.gutter) +
+        ' }\n'
+    }
+
+    return _.reduce(
+      theme.scopes,
+      function(result, values, name) {
+        return result + cssClass + getCmClass(name, values) + '\n'
+      },
+      result
+    )
+  },
+}
+
+module.exports = ({data, name}) => {
+  var parsed = tm.parse(data)
+  parsed.name = name || parsed.name
+  const css = cm.create(parsed)
+  return perfectionist(css, {format: 'compact'}).toString()
+}
+
+if (require.main === module) {
+  cli((err, {data, name}) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+      return
+    }
+    try {
+      var result = module.exports({data, name})
+      console.log(result)
+      process.exit(0)
+      return
+    } catch (err) {
+      console.error(err)
+      process.exit(1)
+      return
+    }
+  })
+}

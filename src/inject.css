@@ -1,0 +1,163 @@
+#application .emoji, body.MINIMAL_UI .emoji{display: none !important}
+#application .pop-over:not(.overlay){width: 250px}
+#application .pop-over{pointer-events: all}
+#application .pop-over button.has-emoji {
+	margin-right: 15px;
+}
+
+body.MINIMAL_UI #application .text-editor .CodeMirror,
+body.MINIMAL_UI #application .project-search-pop,
+body.MINIMAL_UI #application .filetree .file,
+body.MINIMAL_UI #application .files-loading,
+pre, xmp, plaintext, listing, code, kbd, pre, samp{
+	font-family: "SF Mono", Menlo, Consolas, Monaco, "Lucida Console", Monospace !important;
+}
+
+body.MINIMAL_UI #application .sidebar .icon-collapse{
+	transform: rotate(-90deg);
+	top: 5px;
+}
+#application .sidebar .icon-collapse{
+	transform: rotate(90deg);
+	cursor: pointer;
+}
+
+body.MINIMAL_UI #application .sidebar-people{display: none}
+body.MINIMAL_UI #application .editor-helper{padding-bottom: 0}
+body.MINIMAL_UI #application .CodeMirror-scroll{padding-top: 15px}
+body.MINIMAL_UI #application .markdown-container{padding-top: 15px}
+
+body.MINIMAL_UI #application header{	
+	height: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	z-index: 10;
+	pointer-events: none;
+}
+
+body.MINIMAL_UI #application header .header-nav{
+	justify-content: center;
+}
+
+body.MINIMAL_UI #application header .header-nav > *{display: none !important}
+body.MINIMAL_UI #application header .header-nav > .project-search-wrapper{
+	display: block !important;
+	margin: 24px 0;
+	position: relative;
+	flex-grow: initial;
+	min-width: 240px;
+	flex-basis: 50%;
+	max-width: 500px;
+	opacity: 0;
+	user-select: none;
+}
+
+body.MINIMAL_UI #application header .header-nav > .project-search-wrapper:focus-within{
+	pointer-events: all;
+	user-select: all;
+	opacity: 1;
+}
+body.MINIMAL_UI #application header .header-nav > .project-search-wrapper[focus-within]{
+	pointer-events: all;
+	user-select: all;
+	opacity: 1;
+}
+
+body.MINIMAL_UI #application header .project-search-wrapper .project-search-input{
+	margin: 0;
+	border: 0px solid transparent;
+	background-image: none;
+}
+body.MINIMAL_UI #application header .project-search-wrapper .search-input:focus{
+	box-shadow: none;
+}
+
+body.MINIMAL_UI.DARK #application .project-search-pop{
+	box-shadow: 0px 0px 0px 1px rgb(68, 68, 68), 0px 0px 16px 1px rgba(0,0,0,0.66);
+}
+body.MINIMAL_UI #application .project-search-pop {
+	box-shadow: 0px 0px 0px 1px #bbb, 0px 0px 4px 1px #a2d7ff;
+	left: 0;
+	top: 0;
+	padding-top: 22px;
+	z-index: -1;
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+	border: 0px solid white;
+}
+
+body.MINIMAL_UI #application .project-search-pop .pop-over-actions{padding: 6px 0 0}
+body.MINIMAL_UI.DARK #application .project-search-pop .result{border-color: #404040}
+body.MINIMAL_UI #application .project-search-pop .result{
+	border-radius: 0;
+	border-bottom: 0px solid transparent;
+	border-top: 1px solid #e5e5e5;
+}
+
+body.MINIMAL_UI #application .project-search-pop .result-type,
+body.MINIMAL_UI #application .project-search-pop .result-name{
+	display: none !important;
+}
+body.MINIMAL_UI.DARK #application .project-search-pop .result-description{color: #dadada}
+body.MINIMAL_UI #application .project-search-pop .result:focus .result-description,
+body.MINIMAL_UI #application .project-search-pop .result.focus .result-description,
+body.MINIMAL_UI #application .project-search-pop .result:hover .result-description,
+body.MINIMAL_UI #application .project-search-pop .result.hover .result-description{
+	color: #fafafa !important;
+}
+body.MINIMAL_UI #application .project-search-pop .result-description{
+	color: #222;
+	padding-top: 0;
+}
+
+body.MINIMAL_UI #application header > dialog.pop-over{
+	left: 50vw;
+	top: 50vh;
+	transform: translate(-50%, -50%);
+}
+
+body.MINIMAL_UI.DARK #application .sidebar{background: #1a1b1c}
+body.MINIMAL_UI #application .sidebar{background: #fafafa}
+body.MINIMAL_UI #application .sidebar:not(.sidebar-collapsed){min-width: 206px}
+body.MINIMAL_UI #application .sidebar.sidebar-collapsed{min-width: 0; width: 0 !important}
+
+body.MINIMAL_UI.DARK #application .sidebar .debug-buttons{background: #404040}
+body.MINIMAL_UI #application .sidebar .debug-buttons{
+	background: #e5e5e5;
+	border-bottom: 0px solid transparent;
+	padding-bottom: 8px;
+	padding-top: 8px;
+	margin-top: 0;
+	height: auto;
+}
+body.MINIMAL_UI #application .sidebar-files{margin-top: 0}
+body.MINIMAL_UI #application .filetree .file{
+	margin: 0;
+	border-radius: 0;
+	padding-left: 15px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+body.MINIMAL_UI #application .sidebar .filetree .secrets-sidebar-icon,
+body.MINIMAL_UI #application .sidebar .filetree .assets-sidebar-icon,
+body.MINIMAL_UI #application .sidebar .filetree .asking-for-help-sidebar-item{
+	padding-left: 38px;
+	background-position-x: 15px;
+}
+
+body.MINIMAL_UI #application .filetree .file .options.icon{
+	top: 1px;
+}
+
+body.MINIMAL_UI .debug-buttons .segmented-buttons{margin-left: 15px}
+body.MINIMAL_UI .debug-buttons .segmented-buttons > button.new-file{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+body.MINIMAL_UI .CodeMirror pre {
+	font-size: 15px !important;
+	text-rendering: optimizeLegibility !important;
+}
