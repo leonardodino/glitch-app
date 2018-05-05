@@ -4,5 +4,7 @@ function handle_theme(theme) {
   $('body').classList[isDark ? 'add' : 'remove']('DARK')
 }
 
-handle_theme(application.currentTheme())
-application.currentTheme.observe(handle_theme)
+if(application.currentTheme){
+  handle_theme(application.currentTheme())
+  application.currentTheme.observe(handle_theme)
+}
