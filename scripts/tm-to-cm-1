@@ -8,8 +8,8 @@ var cssjson = require('cssjson')
 var cli = require('./cli')
 var {process: perfectionist} = require('perfectionist')
 var scopes = {
-  // 'background': 'background',
-  // 'foreground': 'color',
+  'background': 'background',
+  'foreground': 'color',
   selection: ['CodeMirror-selected', 'background'],
   lineHighlight: ['CodeMirror-activeline-background', 'background'],
   comment: 'cm-comment',
