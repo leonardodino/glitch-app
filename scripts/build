@@ -11,7 +11,7 @@ semver(){
 PKG_VERSION="$(json version < package.json | semver)"
 OSX_ICON='./Glitch.icns'
 DARK_THEME='./dark.tmTheme'
-DARK_PREFIX='body.MINIMAL_UI.DARK'
+DARK_PREFIX='body:not(.FULL_UI).DARK #application'
 
 CSS_SOURCE='./inject.css'
 CSS_INJECT='./build/inject.css'

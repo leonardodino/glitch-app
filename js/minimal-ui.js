@@ -20,20 +20,20 @@ const _$ = selector => {
 
 function minimal_ui() {
   const $body = $('body')
-  const _prefix = 'MINIMAL_UI'
+  const full_ui = 'FULL_UI'
 
   if (!$('#application')) return
   move_new_file_button(true)
-  $body.classList.add(_prefix)
+  $body.classList.remove(full_ui)
 
   _$('.sidebar .icon-collapse').addEventListener('click', function(event) {
     event.preventDefault()
     event.stopPropagation()
-    if ($body.classList.contains(_prefix)) {
-      $body.classList.remove(_prefix)
-      move_new_file_button(false)
-    } else {
+    if ($body.classList.contains(full_ui)) {
       minimal_ui()
+    } else {
+      $body.classList.add(full_ui)
+      move_new_file_button(false)
     }
   })
 }
