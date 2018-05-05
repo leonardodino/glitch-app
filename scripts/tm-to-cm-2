@@ -5,7 +5,7 @@
 
 var plist = require('plist')
 var _ = require('lodash')
-var cli = require('../lib/cli')
+var cli = require('./cli')
 var {process: perfectionist} = require('perfectionist')
 var scopeMap = {
   color: '0.settings.color',

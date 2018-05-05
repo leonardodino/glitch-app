@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
+
+echo 'starting...'
 rm -rf ./build ./dist && mkdir -p ./build ./dist
 
 semver(){
@@ -7,41 +9,49 @@ semver(){
 }
 
 PKG_VERSION="$(json version < package.json | semver)"
-ICON='./Glitch.icns'
-DARK_THEME='./src/dark.tmTheme'
+OSX_ICON='./Glitch.icns'
+DARK_THEME='./dark.tmTheme'
 DARK_PREFIX='body.MINIMAL_UI.DARK'
 
-CSS_SOURCE='./src/inject.css'
+CSS_SOURCE='./inject.css'
 CSS_INJECT='./build/inject.css'
 
-JS_SOURCE='./src/inject.js'
+JS_SOURCE='./inject.js'
 JS_INJECT='./build/inject.js'
 
-# [BUILD_CSS]
+echo 'checking files...'
+[ -f "$CSS_SOURCE" ] || exit 1
+[ -f "$JS_SOURCE" ] || exit 1
+[ -f "$OSX_ICON" ] || exit 1
+[ -f "$DARK_THEME" ] || exit 1
+
+echo 'building css...'
 cat \
   "$CSS_SOURCE" \
   <(./scripts/tm-to-cm-1 --prefix "$DARK_PREFIX" < "$DARK_THEME" || kill $$) \
   <(./scripts/tm-to-cm-2 --prefix "$DARK_PREFIX" < "$DARK_THEME" || kill $$) \
   | cssnano | perfectionist -f compact \
-  > "$CSS_INJECT"
+> "$CSS_INJECT"
 
-# [BUILD_JS]
+echo 'building js...'
 kitsch "$JS_SOURCE" > "$JS_INJECT"
 
-# [BUILD_ELECTRON]
+echo 'building electron...'
 nativefier \
   --platform osx --arch x64 \
   --app-version "$PKG_VERSION" \
   --min-width 360 --min-height 360 \
-  --name 'Glitch' --icon "$ICON" \
+  --name 'Glitch' --icon "$OSX_ICON" \
   --inject "$CSS_INJECT" --inject "$JS_INJECT" \
   'https://glitch.com' 'build'
 
 mv ./build/Glitch-darwin-x64/Glitch.app ./dist/Glitch.app
 
+echo 'creating disk image...'
 hdiutil create  -ov \
   -volname "Glitch v${PKG_VERSION}" \
   -srcfolder './dist' \
   -format UDZO 'Glitch.dmg'
 
+echo 'cleaning up...'
 rm -rf ./build ./dist

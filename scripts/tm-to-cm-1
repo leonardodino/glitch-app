@@ -5,7 +5,7 @@
 
 var plist = require('plist')
 var cssjson = require('cssjson')
-var cli = require('../lib/cli')
+var cli = require('./cli')
 var {process: perfectionist} = require('perfectionist')
 var scopes = {
   // 'background': 'background',
