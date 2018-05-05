@@ -1,6 +1,6 @@
 {
   "name": "glitch-app",
-  "version": "0.0.0-alpha",
+  "version": "0.0.0",
   "description": "glitch.com electron wrapper",
   "repository": "https://github.com/leonardodino/glitch-app",
   "author": "Leonardo Dino",
