@@ -17,3 +17,7 @@
 !(() => {
   /* @import js/project-search-blur.js */
 })()
+
+!(() => {
+  /* @import js/keyboard-shortcuts.js */
+})()
