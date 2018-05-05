@@ -38,4 +38,10 @@ nativefier \
   'https://glitch.com' 'build'
 
 mv ./build/Glitch-darwin-x64/Glitch.app ./dist/Glitch.app
-rm -rf ./build
+
+hdiutil create  -ov \
+  -volname "Glitch v${PKG_VERSION}" \
+  -srcfolder './dist' \
+  -format UDZO 'Glitch.dmg'
+
+rm -rf ./build ./dist
