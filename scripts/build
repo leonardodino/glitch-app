@@ -46,6 +46,21 @@ nativefier \
   'https://glitch.com' 'build'
 
 mv ./build/Glitch-darwin-x64/Glitch.app ./dist/Glitch.app
+rm -rf ./build
+
+if [[ "$1" = 'install' ]]; then
+  echo 'quitting app...'
+  killall Glitch || true
+
+  echo 'installing...'
+  ditto ./dist/Glitch.app /Applications/Glitch.app
+
+  if [[ "$2" = 'launch' ]]; then
+    open /Applications/Glitch.app
+  fi
+  exit 0
+fi
+
 
 echo 'creating disk image...'
 hdiutil create  -ov \
@@ -54,4 +69,4 @@ hdiutil create  -ov \
   -format UDZO 'Glitch.dmg'
 
 echo 'cleaning up...'
-rm -rf ./build ./dist
+rm -rf ./dist
