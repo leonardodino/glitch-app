@@ -5,7 +5,7 @@
   "repository": "https://github.com/leonardodino/glitch-app",
   "author": "Leonardo Dino",
   "license": "MIT",
-  "private": false,
+  "private": true,
   "scripts": {
     "build": "./scripts/build"
   },
