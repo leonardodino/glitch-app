@@ -15,3 +15,5 @@ deploy:
   file: "./Glitch.dmg"
   on:
     tags: true
+notifications:
+  email: false
