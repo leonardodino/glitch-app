@@ -9,8 +9,6 @@ application.updateUrlWithPosition = function(path){
   const fragment = this.locationFragment(path, 0, 0)
   const url = `${this.currentUrl()}?path=${fragment}`
   if(url !== window.location.href){
-    console.log('replace', url)
     return updateUrlWithPosition.apply(this, [path, 0, 0])
   }
-  console.log('noop', url)
 }.bind(application)
