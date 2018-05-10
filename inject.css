@@ -76,10 +76,10 @@ body:not(.FULL_UI) #application header .project-search-wrapper .search-input:foc
   box-shadow: none;
 }
 
-body:not(.FULL_UI).DARK #application .project-search-pop{
+body:not(.FULL_UI).DARK #application .project-search-pop.project-search-pop{
   box-shadow: 0px 0px 0px 1px rgb(68, 68, 68), 0px 0px 16px 1px rgba(0,0,0,0.66);
 }
-body:not(.FULL_UI) #application .project-search-pop {
+body:not(.FULL_UI) #application .project-search-pop.project-search-pop {
   box-shadow: 0px 0px 0px 1px #bbb, 0px 0px 4px 1px #a2d7ff;
   left: 0;
   top: 0;
@@ -158,6 +158,15 @@ body:not(.FULL_UI) #application .debug-buttons .segmented-buttons{margin-left: 1
 body:not(.FULL_UI) #application .debug-buttons .segmented-buttons > button.new-file{
   margin-left: 0px;
   margin-right: 0px;
+}
+
+body:not(.FULL_UI) #application .CodeMirror {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: antialised;
+  font-smoothing: antialised;
+  text-rendering: optimizeLegibility;
 }
 
 body:not(.FULL_UI) #application .CodeMirror pre {
